@@ -29,9 +29,9 @@ var requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
+  // console.log('test');
 
-
-  if (request.method === 'GET') {
+  if (request.method === 'GET' && (request.url === '/classes/messages' || request.url ===  '/?order=-createdAt')) {
     // The outgoing status.
     var statusCode = 200;
 
@@ -61,15 +61,37 @@ var requestHandler = function(request, response) {
     // node to actually send all the data over to the client.
     response.end('{"results":' + JSON.stringify(chats) +'}');
 
-  } else if (request.method === 'POST') {
+
+
+  } else if (request.method === 'POST' && (request.url === '/classes/messages' || request.url ===  '/?order=-createdAt')) {
+
+    var body = [];
+
+    // request.on('data', function (data) {
+    //   body += data;
+    //   console.log(data, 'next');  
+    // });
+
+    request.on('data', (chunk) => {
+      body.push(chunk);
+    }).on('end', () => {
+      body = Buffer.concat(body).toString();
+      chats.push(JSON.parse(body));
+    });
+
 
     var statusCode = 201;
-    chats.push(request._postData);
     var headers = defaultCorsHeaders;
     headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
     response.end('{"results":' + JSON.stringify(chats) +'}');
 
+  } else {
+    var statusCode = 404;
+    var headers = defaultCorsHeaders;
+    headers['Content-Type'] = 'application/json';
+    response.writeHead(statusCode, headers);
+    response.end();
   }
 };
 
