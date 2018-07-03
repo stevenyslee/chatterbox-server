@@ -31,7 +31,7 @@ var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
   // console.log('test');
 
-  if (request.method === 'GET' && (request.url === '/classes/messages' || request.url ===  '/?order=-createdAt')) {
+  if (request.method === 'GET' && (request.url === '/classes/messages' || request.url === '/?order=-createdAt')) {
     // The outgoing status.
     var statusCode = 200;
 
@@ -59,11 +59,11 @@ var requestHandler = function(request, response) {
     //
     // Calling .end "flushes" the response's internal buffer, forcing
     // node to actually send all the data over to the client.
-    response.end('{"results":' + JSON.stringify(chats) +'}');
+    response.end('{"results":' + JSON.stringify(chats) + '}');
 
 
 
-  } else if (request.method === 'POST' && (request.url === '/classes/messages' || request.url ===  '/?order=-createdAt')) {
+  } else if (request.method === 'POST' && (request.url === '/classes/messages' || request.url === '/?order=-createdAt' || request.url === '/')) {
 
     var body = [];
 
@@ -84,7 +84,7 @@ var requestHandler = function(request, response) {
     var headers = defaultCorsHeaders;
     headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
-    response.end('{"results":' + JSON.stringify(chats) +'}');
+    response.end('{"results":' + JSON.stringify(chats) + '}');
 
   } else {
     var statusCode = 404;
