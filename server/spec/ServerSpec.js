@@ -65,10 +65,6 @@ describe('Node Server Request Listener Function', function() {
     var res = new stubs.response();
 
     handler.requestHandler(req, res);
-
-    // console.log('req', req);
-    // console.log('res', res);
-
     // Expect 201 Created response status
     expect(res._responseCode).to.equal(201);
 
@@ -87,9 +83,6 @@ describe('Node Server Request Listener Function', function() {
     var res = new stubs.response();
 
     handler.requestHandler(req, res);
-
-    // console.log('req', req);
-
     expect(res._responseCode).to.equal(201);
 
     // Now if we request the log for that room the message we posted should be there:
@@ -98,11 +91,8 @@ describe('Node Server Request Listener Function', function() {
 
     handler.requestHandler(req, res);
     
-    // console.log('res', res);
-
     expect(res._responseCode).to.equal(200);
     var messages = JSON.parse(res._data).results;
-    // console.log(messages);
     expect(messages.length).to.be.above(0);
     expect(messages[0].username).to.equal('Jono');
     expect(messages[0].text).to.equal('Do my bidding!');
@@ -122,6 +112,63 @@ describe('Node Server Request Listener Function', function() {
       function() {
         expect(res._responseCode).to.equal(404);
       });
+  });
+
+  it('Should respond with messages that were previously posted', function() {
+    var stubMsg = {
+      username: 'Jono',
+      text: 'Do my bidding!'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+    expect(res._responseCode).to.equal(201);
+
+    var stubMsg = {
+      username: 'Test',
+      text: 'Test Message!'
+    };
+
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+    expect(res._responseCode).to.equal(201);
+
+    // Now if we request the log for that room the message we posted should be there:
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+    
+    expect(res._responseCode).to.equal(200);
+    var messages = JSON.parse(res._data).results;
+    expect(messages.length).to.be.above(0);
+    expect(messages[2].username).to.equal('Jono');
+    expect(messages[2].text).to.equal('Do my bidding!');
+    expect(messages[3].username).to.equal('Test');
+    expect(messages[3].text).to.equal('Test Message!');
+    expect(res._ended).to.equal(true);
+  });
+
+  it('Should respond with messages after POST request', function() {
+    var stubMsg = {
+      username: 'Jono',
+      text: 'Do my bidding!'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+    expect(res._responseCode).to.equal(201);
+    
+    expect(res._responseCode).to.equal(201);
+    var messages = JSON.parse(res._data).results;
+    expect(messages.length).to.be.above(0);
+    expect(messages[4].username).to.equal('Jono');
+    expect(messages[4].text).to.equal('Do my bidding!');
+    expect(res._ended).to.equal(true);
   });
 
 });

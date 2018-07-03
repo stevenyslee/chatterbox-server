@@ -29,7 +29,6 @@ var requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
-  // console.log('test');
 
   if (request.method === 'GET' && (request.url === '/classes/messages' || request.url === '/?order=-createdAt')) {
     // The outgoing status.
@@ -43,10 +42,7 @@ var requestHandler = function(request, response) {
     // You will need to change this if you are sending something
     // other than plain text, like JSON or HTML.
 
-
     headers['Content-Type'] = 'application/json';
-    // response.setHeader('Content-Type', 'application/json');
-
 
     // .writeHead() writes to the request line and headers of the response,
     // which includes the status and all headers.
@@ -61,16 +57,9 @@ var requestHandler = function(request, response) {
     // node to actually send all the data over to the client.
     response.end('{"results":' + JSON.stringify(chats) + '}');
 
-
-
-  } else if (request.method === 'POST' && (request.url === '/classes/messages' || request.url === '/?order=-createdAt' || request.url === '/')) {
+  } else if (request.method === 'POST' && request.url === '/classes/messages') {
 
     var body = [];
-
-    // request.on('data', function (data) {
-    //   body += data;
-    //   console.log(data, 'next');  
-    // });
 
     request.on('data', (chunk) => {
       body.push(chunk);
@@ -87,6 +76,7 @@ var requestHandler = function(request, response) {
     response.end('{"results":' + JSON.stringify(chats) + '}');
 
   } else {
+    
     var statusCode = 404;
     var headers = defaultCorsHeaders;
     headers['Content-Type'] = 'application/json';
